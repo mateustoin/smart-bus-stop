@@ -1,0 +1,12 @@
+[Unit]
+Description=LoRaWAN connectivity module of Smart Bus Stop Project
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/lorawan_connectivity_module.py
+Type=simple
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
