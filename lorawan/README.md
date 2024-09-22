@@ -28,8 +28,33 @@ More information on libraries can be found at https://github.com/RoboCore/RoboCo
 
 ## Usage
 
-The LoRaWAN connectivity module from Smart Bus Stop project can be used a stand-alone LoRaWAN piece for sending LORaWAN messagem to the cloud over LoRaWAN connectivity.
-All programs running in the same Linux instance can send a LoRaWAN message by writing it in a named pipe, which is constantly listened by LoRaWAN connectivity module.
+The LoRaWAN connectivity module from Smart Bus Stop project can be used a stand-alone LoRaWAN piece for sending LORaWAN messagem to the cloud over LoRaWAN connectivity. 
+
+Here follows the instruction to run this module:
+
+1) Place the "lorawan_connectivity_module.py" file in /home/pi folder.
+2) Place the "lorawan_connectivity_service_file.service" file in "/etc/systemd/system/" folder and execute the command below:
+
+``
+sudo systemctl daemon-reload
+``
+
+3) Execute the following command to enable LoRaWAN connectivity module as a service (handled by systemd) in Linux:
+
+``
+sudo systemctl enable lorawan_connectivity_service_file
+``
+
+It'll also automatically start the LoRaWAN connectivity module when Raspberry Pi boots.
+
+
+4) Execute the following command to start LoRaWAN connectivity module as a service (handled by systemd) in Linux:
+
+``
+sudo systemctl start lorawan_connectivity_service_file
+``
+
+After following the steps above, the LoRaWAN connectivity module is ready to be used. All programs running in the same Linux instance can send a LoRaWAN message by writing it in a named pipe, which is constantly listened by LoRaWAN connectivity module.
 
 Therefore, once LoRaWAN connectivity module is active, all you need to do to send a LoRaWAN message to the project's cloud application is to write the desired message to the **lorawan_comm** named pipe, as seen in example below:
 
