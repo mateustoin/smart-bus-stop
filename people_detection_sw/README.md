@@ -1,15 +1,17 @@
-# Run camera script
+Aqui está o README corrigido:
 
-##Create Python environment
-'''shell
+Run Camera Script
+
+Create Python Environment
+
 pip install -r requirements.txt
-'''
 
-##Run the program
-'''python
+Run the Program
+
 python camera.py
-'''
+
 or
-'''python
+
 python3 camera.py
-'''
+
+Apenas corrigi a formatação das seções de código e títulos.
