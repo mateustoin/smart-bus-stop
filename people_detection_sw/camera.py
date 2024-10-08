@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # Load YOLO model (consider using yolov3-tiny for better performance)
-net = cv2.dnn.readNet("./yolov4-tiny.weights", "./darknet/cfg/yolov4-tiny.cfg")
+net = cv2.dnn.readNet("./yolov4-tiny.weights", "./yolov4-tiny.cfg")
 
 # Capture video from webcam
 cap = cv2.VideoCapture(0)
