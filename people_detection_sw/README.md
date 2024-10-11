@@ -1,5 +1,3 @@
-Aqui está o README corrigido:
-
 Run Camera Script
 
 Create Python Environment
