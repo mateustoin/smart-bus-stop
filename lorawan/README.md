@@ -56,18 +56,20 @@ sudo systemctl start lorawan_connectivity_service_file
 
 After following the steps above, the LoRaWAN connectivity module is ready to be used. All programs running in the same Linux instance can send a LoRaWAN message by writing it in a named pipe, which is constantly listened by LoRaWAN connectivity module.
 
-Therefore, once LoRaWAN connectivity module is active, all you need to do to send a LoRaWAN message to the project's cloud application is to write the desired message to the **lorawan_comm** named pipe, as seen in example below:
+Therefore, once LoRaWAN connectivity module is active, all you need to do to send a LoRaWAN message to the named pipe you desire. There are two named pipes available:
 
-``
-echo "Message" > /tmp/lorawan_comm
-``
+* People counter named pipe (file: /tmp/people_counter): when sending a integer number (representing the people counter) to this named pipe, a LoRaWAN message will be sent indicating people counter has been updated. 
+This message is formatted into a hex-string, containing: Event code (00) and people counter (example: 0034, for 52 people counter value)
+* Panic button named pipe (file: /tmp/panic_button): when sending any charactewr (representing the panic button trigger) to this named pipe, a LoRaWAN message will be sent indicating panic button has been triggered.
+This message is formatted into a hex-string, containing: Event code (01) and people counter (example: 0134, for 52 people counter value)
+
 
 IMPORTANT: 
-1) Before use this module, you need to create a TXT file names "lorawan_comm.txt" (in the same folder as this module's .py file is) containing:
-   * Device Address in the first line (hex-string format, no : nor - allowed)
-   * Application Session Key in the second line (hex-string format, no : nor - allowed)
-   * Network Session Key in the third line (hex-string format, no : nor - allowed)
-2) All messages MUST be in hex-string format. Example: if you need to send the "ABCD" message, the correspondent hex-string for this is "41424344" (in ASCII table: A=0x41, B=0x42, C=0x43 and D=0x44).
+Before use this module, you need to create a TXT file names "lorawan_comm.txt" (in the same folder as this module's .py file is) containing:
+
+* Device Address in the first line (hex-string format, no : nor - allowed)
+* Application Session Key in the second line (hex-string format, no : nor - allowed)
+* Network Session Key in the third line (hex-string format, no : nor - allowed)
 
 
 ## Operational conditions
