@@ -62,6 +62,18 @@ if returnCode == CommandResponse.OK:
 else:
     print("Failed to configure Network Session Key")
 
+returnCode = lorawan.set_ADR(1)
+if returnCode == CommandResponse.OK:
+    print("ADR successfully configured to ON state")
+else:
+    print("Failed to configure ADR to ON state")
+
+returnCode = lorawan.set_DR(0)
+if returnCode == CommandResponse.OK:
+    print("ADR successfully configured DR to 0")
+else:
+    print("Failed to configure DR to 0")    
+
 returnCode = lorawan.save()
 if returnCode == CommandResponse.OK:
     print("LoRaWAN module (SMW-SX1262M0) configuration has been saved")
@@ -95,6 +107,7 @@ def lorawan_control_thread():
 # Function to read from people counter named pipe
 def read_fifo_people_counter():
     global people_counter
+    global event_people_counter_value
 
     print("People counter thread is on")
     with open(fifo_people_counter_path, "r") as fifo:
@@ -119,21 +132,28 @@ def read_fifo_people_counter():
 # Function to read from panic button named pipe
 def read_fifo_panic_button():
     global people_counter
+    global event_panic_button_trigger
 
-    print("Panic button thread is on")
+    print("Panic Button thread is on")
     with open(fifo_panic_button_path, "r") as fifo:
         while True:
             msg = fifo.readline()
-            if msg:
-                print(f"A new message has been received from panic button named pipe: {msg.strip()}")
-                print(f"Last people counter value: "+str(people_counter))
+            msg_str = msg.strip()
 
-                # Format the message into a hex-string, adding event byte and most recent people counter value
+            if msg:
+                # Update people counter value
+                people_counter = int(msg_str)
+
+                print(f"A new message has been received from panic button named pipe: {msg_str}")
+
+                # Format the message into a hex-string, adding event byte
                 msg_hexstring = event_panic_button_trigger + f'{people_counter:x}'
                 print(f"Hex-string people counter message: {msg_hexstring}")
+                
+                # Add the hex-string message to the queue for the LoRaWAN control thread
+                message_queue.put(msg_hexstring)               
 
-                # Add the message to the queue for the LoRaWAN control thread
-                message_queue.put(msg.strip())                
+
 
 # Create and start the thread for LoRaWAN UART control
 thread_lorawan_control = threading.Thread(target=lorawan_control_thread)
