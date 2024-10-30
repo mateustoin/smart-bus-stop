@@ -122,7 +122,7 @@ def read_fifo_people_counter():
                 print(f"A new message has been received from people counter named pipe: {msg_str}")
 
                 # Format the message into a hex-string, adding event byte
-                msg_hexstring = event_people_counter_value + f'{people_counter:x}'
+                msg_hexstring = event_people_counter_value + f'{people_counter:02x}'
                 print(f"Hex-string people counter message: {msg_hexstring}")
                 
                 # Add the hex-string message to the queue for the LoRaWAN control thread
@@ -147,7 +147,7 @@ def read_fifo_panic_button():
                 print(f"A new message has been received from panic button named pipe: {msg_str}")
 
                 # Format the message into a hex-string, adding event byte
-                msg_hexstring = event_panic_button_trigger + f'{people_counter:x}'
+                msg_hexstring = event_panic_button_trigger + f'{people_counter:02x}'
                 print(f"Hex-string people counter message: {msg_hexstring}")
                 
                 # Add the hex-string message to the queue for the LoRaWAN control thread
