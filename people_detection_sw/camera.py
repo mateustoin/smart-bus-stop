@@ -1,5 +1,33 @@
 import cv2
 import numpy as np
+from threading import Thread, Lock
+from time import sleep
+import os
+
+global people_count
+people_count = 0
+
+lock = Lock()
+
+
+# /tmp/people_counter
+def escrever_numero_no_arquivo(nome_arquivo):
+    while True:
+        with open(nome_arquivo, "w") as arquivo:
+            try:
+                lock.acquire()
+                arquivo.seek(0)
+                arquivo.truncate()
+                counter = str(people_count)
+                arquivo.write(counter)
+                arquivo.flush()  # Força a escrita imediata no arquivo
+                os.fsync(
+                    arquivo.fileno()
+                )  # Garante a sincronização com o sistema operacional
+            finally:
+                lock.release()
+            sleep(30)  # Define o tempo de atualização
+
 
 # Carrega o modelo YOLO (considere usar yolov3-tiny para melhor performance)
 net = cv2.dnn.readNet("./yolov4-tiny.weights", "./yolov4-tiny.cfg")
@@ -15,7 +43,12 @@ if not cap.isOpened():
 layer_names = net.getLayerNames()
 output_layer_names = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 
+written_thread = Thread(target=escrever_numero_no_arquivo, args=["/tmp/people_counter"])
+
+
 try:
+    written_thread.start()
+    # written_thread.join()
     while True:
         # Lê o frame da webcam
         ret, frame = cap.read()
@@ -67,10 +100,14 @@ try:
                     class_ids.append(class_id)
 
         # Aplica a Supressão Não Máxima para eliminar caixas redundantes
-        indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.5, nms_threshold=0.4)
+        indices = cv2.dnn.NMSBoxes(
+            boxes, confidences, score_threshold=0.5, nms_threshold=0.4
+        )
 
         # Conta o número de pessoas detectadas após NMS
+        lock.acquire()
         people_count = len(indices)
+        lock.release()
 
         # Exibe a contagem de pessoas no terminal
         print(f"Número de pessoas detectadas: {people_count}")
