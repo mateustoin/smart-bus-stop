@@ -6,6 +6,9 @@ import time
 import signal
 import sys
 
+# File name to write
+wfile = "/tmp/panic_button"
+
 # GPIO numbers
 green_led = 15
 yellow_led = 13
@@ -23,16 +26,20 @@ def setup():
     gpio.setup(yellow_led, gpio.OUT)
     gpio.setup(red_led, gpio.OUT)
 
-def my_callback(channel):
-    print("Button Clicked!")
-    gpio.output(blue_led, gpio.HIGH)
-    time.sleep(1)
-    gpio.output(blue_led, gpio.LOW)
+def pressed_panic_button_event(channel):
+    print("Panic Button Clicked!")
+    with open(wfile, 'w') as file:
+        file.write('10')
+        file.flush()
+
+    #gpio.output(blue_led, gpio.HIGH)
+    #time.sleep(1)
+    #gpio.output(blue_led, gpio.LOW)
 
 if __name__ == '__main__':
     init()
     setup()
-    gpio.add_event_detect(p_button, gpio.RISING, callback=my_callback, bouncetime=300)
+    gpio.add_event_detect(p_button, gpio.RISING, callback=pressed_panic_button_event, bouncetime=300)
 
     # Add other routines
     while True:
