@@ -4,29 +4,27 @@ from threading import Thread, Lock
 from time import sleep
 import os
 
-global people_count
-people_count = 0
+# global people_count
+# people_count = 0
 
-lock = Lock()
-
+# lock = Lock()
 
 # /tmp/people_counter
-def escrever_numero_no_arquivo(nome_arquivo):
-    while True:
-        with open(nome_arquivo, "w") as arquivo:
-            try:
-                lock.acquire()
-                arquivo.seek(0)
-                arquivo.truncate()
-                counter = str(people_count)
-                arquivo.write(counter)
-                arquivo.flush()  # Força a escrita imediata no arquivo
-                os.fsync(
-                    arquivo.fileno()
-                )  # Garante a sincronização com o sistema operacional
-            finally:
-                lock.release()
-            sleep(30)  # Define o tempo de atualização
+# def escrever_numero_no_arquivo(nome_arquivo):
+#     with open(nome_arquivo, "w") as arquivo:
+#         try:
+#             lock.acquire()
+#             arquivo.seek(0)
+#             arquivo.truncate()
+#             counter = str(people_count)
+#             arquivo.write(counter)
+#             arquivo.flush()  # Força a escrita imediata no arquivo
+#             os.fsync(
+#                 arquivo.fileno()
+#             )  # Garante a sincronização com o sistema operacional
+#         finally:
+#             lock.release()
+#         sleep(30)  # Define o tempo de atualização
 
 
 # Carrega o modelo YOLO (considere usar yolov3-tiny para melhor performance)
@@ -43,11 +41,11 @@ if not cap.isOpened():
 layer_names = net.getLayerNames()
 output_layer_names = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 
-written_thread = Thread(target=escrever_numero_no_arquivo, args=["/tmp/people_counter"])
+# written_thread = Thread(target=escrever_numero_no_arquivo, args=["/tmp/people_counter"])
 
 
 try:
-    written_thread.start()
+    # written_thread.start()
     # written_thread.join()
     while True:
         # Lê o frame da webcam
@@ -105,16 +103,20 @@ try:
         )
 
         # Conta o número de pessoas detectadas após NMS
-        lock.acquire()
         people_count = len(indices)
-        lock.release()
+        arquivo = open("/tmp/people_counter", "w")
+        arquivo.write(str(people_count))
+        arquivo.close()
 
         # Exibe a contagem de pessoas no terminal
         print(f"Número de pessoas detectadas: {people_count}")
 
+
         # Se desejar adicionar uma condição de saída, por exemplo, após um certo tempo ou ao pressionar uma tecla
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
+
+        sleep(30)
 
 except KeyboardInterrupt:
     # Permite interromper o loop com Ctrl+C
