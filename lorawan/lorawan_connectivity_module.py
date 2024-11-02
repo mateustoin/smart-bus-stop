@@ -141,9 +141,6 @@ def read_fifo_panic_button():
             msg_str = msg.strip()
 
             if msg:
-                # Update people counter value
-                people_counter = int(msg_str)
-
                 print(f"A new message has been received from panic button named pipe: {msg_str}")
 
                 # Format the message into a hex-string, adding event byte
