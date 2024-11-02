@@ -1,31 +1,27 @@
 import cv2
 import numpy as np
-from threading import Thread, Lock
+from threading import Thread, Lock, Timer
 from time import sleep
 import os
 
-# global people_count
-# people_count = 0
+class RepeatTimer(Timer):
+    def run(self):
+        while not self.finished.wait(self.interval):
+            self.function(*self.args, **self.kwargs)
 
-# lock = Lock()
+global people_count
+people_count = 0
 
-# /tmp/people_counter
-# def escrever_numero_no_arquivo(nome_arquivo):
-#     with open(nome_arquivo, "w") as arquivo:
-#         try:
-#             lock.acquire()
-#             arquivo.seek(0)
-#             arquivo.truncate()
-#             counter = str(people_count)
-#             arquivo.write(counter)
-#             arquivo.flush()  # Força a escrita imediata no arquivo
-#             os.fsync(
-#                 arquivo.fileno()
-#             )  # Garante a sincronização com o sistema operacional
-#         finally:
-#             lock.release()
-#         sleep(30)  # Define o tempo de atualização
+lock = Lock()
 
+def write_people_count():
+    print(f'Writing people_count({people_count}) in file')
+    with lock:
+        f = open('/tmp/people_counter', 'w')
+        f.write(str(people_count))
+        f.close()
+
+p_timer = RepeatTimer(30, write_people_count)
 
 # Carrega o modelo YOLO (considere usar yolov3-tiny para melhor performance)
 net = cv2.dnn.readNet("./yolov4-tiny.weights", "./yolov4-tiny.cfg")
@@ -41,12 +37,8 @@ if not cap.isOpened():
 layer_names = net.getLayerNames()
 output_layer_names = [layer_names[i - 1] for i in net.getUnconnectedOutLayers()]
 
-# written_thread = Thread(target=escrever_numero_no_arquivo, args=["/tmp/people_counter"])
-
-
 try:
-    # written_thread.start()
-    # written_thread.join()
+    p_timer.start()
     while True:
         # Lê o frame da webcam
         ret, frame = cap.read()
@@ -104,9 +96,6 @@ try:
 
         # Conta o número de pessoas detectadas após NMS
         people_count = len(indices)
-        arquivo = open("/tmp/people_counter", "w")
-        arquivo.write(str(people_count))
-        arquivo.close()
 
         # Exibe a contagem de pessoas no terminal
         print(f"Número de pessoas detectadas: {people_count}")
@@ -116,12 +105,13 @@ try:
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
-        sleep(30)
+        sleep(5)
 
 except KeyboardInterrupt:
     # Permite interromper o loop com Ctrl+C
-    pass
+    print('Keyboard interrupt')
+    p_timer.cancel()
 
-# Libera a webcam e fecha todas as janelas
-cap.release()
-cv2.destroyAllWindows()
+    # Libera a webcam e fecha todas as janelas
+    cap.release()
+    cv2.destroyAllWindows()
