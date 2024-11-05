@@ -5,17 +5,20 @@
 // Wifi network station credentials
 #define WIFI_SSID ""
 #define WIFI_PASSWORD ""
+
 // Telegram BOT Token (Get from Botfather)
 #define BOT_TOKEN ""
+
+// Identificator responsible 
 #define CHAT_ID ""
 
+// WiFi and Bot objects
 WiFiClientSecure secured_client;
 UniversalTelegramBot bot(BOT_TOKEN, secured_client);
 
-// constants won't change. They're used here to set pin numbers:
+// GPIO used
 const int buttonPin = 37;  // the number of the pushbutton pin
 const int ledPin = 19;    // the number of the LED pin
-//const int buzzerPin = 2;    // the number of the LED pin
 
 // variables will change:
 int buttonState = 0;  // variable for reading the pushbutton status
@@ -51,26 +54,23 @@ void setup() {
 
   // initialize the LED pin as an output:
   pinMode(ledPin, OUTPUT);
-  //pinMode(buzzerPin, OUTPUT);
   // initialize the pushbutton pin as an input:
   pinMode(buttonPin, INPUT);
 }
 
 void loop() {
-  // read the state of the pushbutton value:
   buttonState = digitalRead(buttonPin);
 
   // check if the pushbutton is pressed. If it is, the buttonState is HIGH:
   if (buttonState == LOW) {
-    // turn LED on:
-    digitalWrite(ledPin, HIGH);
-    //digitalWrite(buzzerPin, HIGH);
+    digitalWrite(ledPin, HIGH); // Turn LED on
+
+    // Send message and location to Telegram Channel
     bot.sendMessage(CHAT_ID, "[ESP32] Houve uma ocorrência reportada pelo panic button! Localização:");
     bot.sendLocation(CHAT_ID, -22.813407, -47.0643614);
     delay(100);
+
   } else {
-    // turn LED off:
-    digitalWrite(ledPin, LOW);
-    //digitalWrite(buzzerPin, LOW);
+    digitalWrite(ledPin, LOW); // Turn LED off
   }
 }
