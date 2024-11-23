@@ -3,6 +3,13 @@
 This is a repository dedicated to the Smart Bus Stop project, made as final project for the MO629A_2024S2 (Internet of Things) class in IC - Unicamp. 
 The goal of this project is to enhance the Unicamp Smart Campus project, adding some functionalities on the bus stops.
 
+This project has been developed by:
+
+* Arthur Barata
+* Eduardo Mosca
+* Mateus Antonio
+* Pedro Bertoleti
+
 
 ## Features
 
